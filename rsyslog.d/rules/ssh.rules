@@ -18,3 +18,8 @@ rule=:Received disconnect from %src-ip:ipv4%: %-:number%: %session-status:word% 
 rule=:Received signal %-:number%; %session-status:char-to:\x2e%\x2e
 rule=:PAM %-:number% more %auth-method:word% %auth:char-to:\x3b%\x3b logname= uid=%uid:number% euid=%euid:number% tty=%tty:word% ruser= rhost=%src-ip:ipv4%%-:whitespace%user=%username:word%
 rule=:Connection %session-status:word% by %src-ip:ipv4% [preauth]
+
+#Añadir estas reglas.
+#May  4 10:17:23 alejandro-VirtualBox sshd[886]: Received SIGHUP; restarting.
+#May  4 10:17:23 alejandro-VirtualBox sshd[886]: Server listening on 0.0.0.0 port 22.
+#May  4 10:17:23 alejandro-VirtualBox sshd[886]: Server listening on :: port 22.
