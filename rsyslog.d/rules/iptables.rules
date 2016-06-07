@@ -1,0 +1,82 @@
+prefix= [%kernel-timestamp:char-to:]%] iptables\x3a
+
+#Ejemplo: [31628.772760] iptables:IN=eth3 OUT= MAC=ff:ff:ff:ff:ff:ff:0a:00:27:00:00:00:08:00 SRC=192.168.56.1 DST=192.168.56.255 LEN=336 TOS=0x00 PREC=0x00 TTL=64 ID=10020 DF PROTO=UDP SPT=17500 DPT=17500 LEN=316 
+rule=:IN=%in-interface:word% OUT= MAC=%dst-mac:mac48%\x3a%src-mac:mac48%\x3a%ethertype:char-to:\x20% SRC=%src-ip:ipv4% DST=%dst-ip:ipv4% LEN=%frame-length:number% TOS=%type-of-service:hexnumber% PREC=%precision:hexnumber% TTL=%ttl:number% ID=%id:number% DF PROTO=%proto:word% SPT=%src-port:number% DPT=%dst-port:number% LEN=%packet-length:number% 
+
+#Ejemplo: [31628.772760] iptables:IN=eth3 OUT= MAC=ff:ff:ff:ff:ff:ff:0a:00:27:00:00:00:08:00 SRC=192.168.56.1 DST=192.168.56.255 LEN=336 TOS=0x00 PREC=0x00 TTL=64 ID=10020 PROTO=UDP SPT=17500 DPT=17500 LEN=316 
+rule=:IN=%in-interface:word% OUT= MAC=%dst-mac:mac48%\x3a%src-mac:mac48%\x3a%ethertype:char-to:\x20% SRC=%src-ip:ipv4% DST=%dst-ip:ipv4% LEN=%frame-length:number% TOS=%type-of-service:hexnumber% PREC=%precision:hexnumber% TTL=%ttl:number% ID=%id:number% PROTO=%proto:word% SPT=%src-port:number% DPT=%dst-port:number% LEN=%packet-length:number% 
+
+#Ejemplo: [31599.573324] iptables:IN=eth2 OUT= MAC= SRC=172.16.7.6 DST=224.0.0.251 LEN=73 TOS=0x00 PREC=0x00 TTL=255 ID=50425 DF PROTO=UDP SPT=5353 DPT=5353 LEN=53 
+rule=:IN=%in-interface:word% OUT= MAC= SRC=%src-ip:ipv4% DST=%dst-ip:ipv4% LEN=%frame-length:number% TOS=%type-of-service:hexnumber% PREC=%precision:hexnumber% TTL=%ttl:number% ID=%id:number% DF PROTO=%proto:word% SPT=%src-port:number% DPT=%dst-port:number% LEN=%packet-length:number% 
+
+#Ejemplo: [31599.573324] iptables:IN=eth2 OUT= MAC= SRC=172.16.7.6 DST=224.0.0.251 LEN=73 TOS=0x00 PREC=0x00 TTL=255 ID=50425 PROTO=UDP SPT=5353 DPT=5353 LEN=53 
+rule=:IN=%in-interface:word% OUT= MAC= SRC=%src-ip:ipv4% DST=%dst-ip:ipv4% LEN=%frame-length:number% TOS=%type-of-service:hexnumber% PREC=%precision:hexnumber% TTL=%ttl:number% ID=%id:number% PROTO=%proto:word% SPT=%src-port:number% DPT=%dst-port:number% LEN=%packet-length:number% 
+
+#No usamos esto porque existe un bug en la versión actual de liblognorm que no reconoce en algunos casos el tipo alternative
+#que es lo que nos interesa de este formato. Explicar esto en la memoria y copiar este ejemplo como ejemplo del formato v2 de liblognorm
+#Esta regla en formato v2 es equivalente a las 4 anteriores.
+#rule=:% [ {"type":"literal", "text":"IN="},
+#		 {"type":"word", "name":"in-interface"},
+#		 {"type":"literal", "text":" OUT= MAC="},
+#		 {"type":"alternative", "parser": [ {"type":"literal", "text":" "}, 
+#		 								    [ {"type":"mac48", "name":"dst-mac"}, 
+#		 								      {"type":"literal", "text":":"}, 
+#		 								      {"type":"mac48", "name":"src-mac"}, 
+#		 								      {"type":"literal", "text":":"}, 
+#		 								      {"type":"char-to", "name":"ethertype", "extradata":" "}, 
+#		 								      {"type":"literal", "text":" "} 
+#		 								     ] 
+#		 								   ] },
+#	     {"type":"literal", "text":"SRC="},
+#	     {"type":"ipv4", "name":"src-ip"},
+#	     {"type":"literal", "text":" DST="},
+#	     {"type":"ipv4", "name":"dst-ip"},
+#	     {"type":"literal", "text":" LEN="},
+#	     {"type":"number", "name":"frame-length"},
+#	     {"type":"literal", "text":" TOS="},
+#	     {"type":"hexnumber", "name":"type-of-service"},
+#	     {"type":"literal", "text":" PREC="},
+#	     {"type":"hexnumber", "name":"precision"},
+#	     {"type":"literal", "text":" TTL="},
+#	     {"type":"number", "name":"ttl"},
+#	     {"type":"literal", "text":" ID="},
+#	     {"type":"number", "name":"id"},
+#	     {"type":"alternative", "parser": [ {"type":"literal", "text":" DF "}, 
+#	     									{"type":"literal", "text":" "} 
+#	     								   ] },
+#	     {"type":"literal", "text":"PROTO="},
+#	     {"type":"word", "name":"proto"},
+#	     {"type":"literal", "text":" SPT="},
+#	     {"type":"number", "name":"src-port"},
+#	     {"type":"literal", "text":" DPT="},
+#	     {"type":"number", "name":"dst-port"},
+#	     {"type":"literal", "text":" LEN="},
+#	     {"type":"number", "name":"packet-length"},
+#	     {"type":"literal", "text":" "}
+#		] %
+
+#Ejemplo: [30819.806655] iptables:IN=eth0 OUT= MAC=08:00:27:a5:0d:91:52:54:00:12:35:02:08:00 SRC=10.0.150.72 DST=10.0.2.15 LEN=40 TOS=0x00 PREC=0x00 TTL=64 ID=398 PROTO=TCP SPT=514 DPT=47125 WINDOW=65535 RES=0x00 ACK URGP=0 
+rule=:IN=%in-interface:word% OUT= MAC=%dst-mac:mac48%\x3a%src-mac:mac48%\x3a%ethertype:char-to:\x20% SRC=%src-ip:ipv4% DST=%dst-ip:ipv4% LEN=%frame-length:number% TOS=%type-of-service:hexnumber% PREC=%precision:hexnumber% TTL=%ttl:number% ID=%id:number% PROTO=%proto:word% SPT=%src-port:number% DPT=%dst-port:number% WINDOW=%tcp-window-size:number% RES=%tcp-reserved:hexnumber% %tcp-pkt-type:word% URGP=%tcp-urgent-pointer:number% 
+#
+#Ejemplo: [28886.863205] iptables:IN=eth3 OUT= MAC=08:00:27:ce:3d:67:0a:00:27:00:00:00:08:00 SRC=192.168.56.1 DST=192.168.56.101 LEN=60 TOS=0x00 PREC=0x00 TTL=64 ID=23349 DF PROTO=TCP SPT=50616 DPT=22 WINDOW=29200 RES=0x00 SYN URGP=0 
+rule=:IN=%in-interface:word% OUT= MAC=%dst-mac:mac48%\x3a%src-mac:mac48%\x3a%ethertype:char-to:\x20% SRC=%src-ip:ipv4% DST=%dst-ip:ipv4% LEN=%frame-length:number% TOS=%type-of-service:hexnumber% PREC=%precision:hexnumber% TTL=%ttl:number% ID=%id:number% DF PROTO=%proto:word% SPT=%src-port:number% DPT=%dst-port:number% WINDOW=%tcp-window-size:number% RES=%tcp-reserved:hexnumber% %tcp-pkt-type:word% URGP=%tcp-urgent-pointer:number% 
+
+#Ejemplo:  [30820.695881] iptables:IN=eth3 OUT= MAC=08:00:27:ce:3d:67:0a:00:27:00:00:00:08:00 SRC=192.168.56.1 DST=192.168.56.101 LEN=108 TOS=0x10 PREC=0x00 TTL=64 ID=36954 DF PROTO=TCP SPT=50720 DPT=22 WINDOW=351 RES=0x00 ACK PSH URGP=0 
+rule=:IN=%in-interface:word% OUT= MAC=%dst-mac:mac48%\x3a%src-mac:mac48%\x3a%ethertype:char-to:\x20% SRC=%src-ip:ipv4% DST=%dst-ip:ipv4% LEN=%frame-length:number% TOS=%type-of-service:hexnumber% PREC=%precision:hexnumber% TTL=%ttl:number% ID=%id:number% DF PROTO=%proto:word% SPT=%src-port:number% DPT=%dst-port:number% WINDOW=%tcp-window-size:number% RES=%tcp-reserved:hexnumber% %tcp-pkt-type:word% %tcp-flag:word% URGP=%tcp-urgent-pointer:number% 
+#
+#rule=:IN=%in-interface:word% OUT= MAC=%dst-mac:mac48%\x3a%src-mac:mac48%\x3a%ethertype:char-to:\x20% SRC=%src-ip:ipv4% DST=%dst-ip:ipv4% LEN=%frame-length:number% TOS=%type-of-service:hexnumber% PREC=%precision:hexnumber% TTL=%ttl:number% ID=%id:number% DF PROTO=%proto:word% SPT=%src-port:number% DPT=%dst-port:number% WINDOW=%tcp-window-size:number% RES=%tcp-reserved:hexnumber% %{"name":"tcp-flags", "type":"repeat",
+#            "parser":
+#                     {"type":"word", "name":"flag", "extradata":" URGP="},
+#            "while":
+#                     {"type":"literal", "text":" "},
+#            "option.permitMismatchInParser": "True" 
+#         }% URGP=%tcp-urgent-pointer:number% 
+
+#Ejemplo: [38199.519558] iptables:IN=eth0 OUT= MAC=08:00:27:a5:0d:91:52:54:00:12:35:02:08:00 SRC=10.0.2.2 DST=10.0.2.15 LEN=60 TOS=0x00 PREC=0xC0 TTL=255 ID=10 PROTO=ICMP TYPE=11 CODE=0 [SRC=10.0.2.15 DST=224.0.0.22 LEN=40 TOS=0x00 PREC=0xC0 TTL=1 ID=0 DF PROTO=2 ] 
+rule=:IN=%in-interface:word% OUT= MAC=%dst-mac:mac48%\x3a%src-mac:mac48%\x3a%ethertype:char-to:\x20% SRC=%src-ip:ipv4% DST=%dst-ip:ipv4% LEN=%frame-length:number% TOS=%type-of-service:hexnumber% PREC=%precision:hexnumber% TTL=%ttl:number% ID=%id:number% PROTO=%proto:word% TYPE=%icmp-type:number% CODE=%icmp-code:number% [SRC=%icmp-src-ip:ipv4% DST=%icmp-dst-ip:ipv4% LEN=%icmp-lenght:number% TOS=%icmp-type-of-service:hexnumber% PREC=%icmp-precision:hexnumber% TTL=%icmp-ttl:number% ID=%icmp-id:number% DF PROTO=%icmp-proto:number% ] 
+
+#Ejemplo: [ 8291.747312] iptables:IN=lo OUT= MAC=00:00:00:00:00:00:00:00:00:00:00:00:08:00 SRC=192.168.0.6 DST=192.168.0.6 LEN=88 TOS=0x00 PREC=0xC0 TTL=64 ID=20970 PROTO=ICMP TYPE=3 CODE=1 [SRC=192.168.0.6 DST=10.0.150.72 LEN=60 TOS=0x00 PREC=0x00 TTL=64 ID=41026 DF PROTO=TCP SPT=58436 DPT=514 WINDOW=29200 RES=0x00 SYN URGP=0 ] 
+rule=:IN=%in-interface:word% OUT= MAC=%dst-mac:mac48%\x3a%src-mac:mac48%\x3a%ethertype:char-to:\x20% SRC=%src-ip:ipv4% DST=%dst-ip:ipv4% LEN=%frame-length:number% TOS=%type-of-service:hexnumber% PREC=%precision:hexnumber% TTL=%ttl:number% ID=%id:number% PROTO=%proto:word% TYPE=%icmp-type:number% CODE=%icmp-code:number% [SRC=%icmp-src-ip:ipv4% DST=%icmp-dst-ip:ipv4% LEN=%icmp-lenght:number% TOS=%icmp-type-of-service:hexnumber% PREC=%icmp-precision:hexnumber% TTL=%icmp-ttl:number% ID=%icmp-id:number% DF PROTO=%icmp-proto:word% SPT=%icmp-src-port:number% DPT=%icmp-dst-port:number% WINDOW=%tcp-window-size:number% RES=%tcp-reserved:hexnumber% %tcp-pkt-type:word% URGP=%tcp-urgent-pointer:number% ] 
+
+#Ejemplo: [ 9613.461813] iptables:IN=lo OUT= MAC=00:00:00:00:00:00:00:00:00:00:00:00:08:00 SRC=192.168.0.6 DST=192.168.0.6 LEN=104 TOS=0x10 PREC=0xC0 TTL=64 ID=65113 PROTO=ICMP TYPE=3 CODE=1 [SRC=192.168.0.6 DST=193.145.15.15 LEN=76 TOS=0x10 PREC=0x00 TTL=64 ID=63107 DF PROTO=UDP SPT=42753 DPT=123 LEN=56 ] 
+rule=:IN=%in-interface:word% OUT= MAC=%dst-mac:mac48%\x3a%src-mac:mac48%\x3a%ethertype:char-to:\x20% SRC=%src-ip:ipv4% DST=%dst-ip:ipv4% LEN=%frame-length:number% TOS=%type-of-service:hexnumber% PREC=%precision:hexnumber% TTL=%ttl:number% ID=%id:number% PROTO=%proto:word% TYPE=%icmp-type:number% CODE=%icmp-code:number% [SRC=%icmp-src-ip:ipv4% DST=%icmp-dst-ip:ipv4% LEN=%icmp-lenght:number% TOS=%icmp-type-of-service:hexnumber% PREC=%icmp-precision:hexnumber% TTL=%icmp-ttl:number% ID=%icmp-id:number% DF PROTO=%icmp-proto:word% SPT=%icmp-src-port:number% DPT=%icmp-dst-port:number% LEN=%udp-length:number% ] 

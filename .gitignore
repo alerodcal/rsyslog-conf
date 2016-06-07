@@ -1,0 +1,2 @@
+*.log
+rsyslog.d/rules/temp
